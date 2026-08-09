@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# AI crawlers — allowed, this content is meant to be quoted
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://mymegahealth.com/sitemap.xml
