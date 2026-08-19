@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- HOURS UPDATE 2026-08-18 - Mon-Thu 9-7, Fri 9-4, Sat closed, Sun 9-6 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -271,8 +272,8 @@
         <span><span class="lab">Forest Hills</span><b>64-51 108th Street</b></span>
       </a>
       <div class="ui ui-hours">
-        <span class="lab" id="openState">Open now &middot; until 8pm</span>
-        <b>Mon&ndash;Thu 9&ndash;8 &middot; Fri 9&ndash;5 &middot; Sun 9&ndash;6 &middot; Sat closed</b>
+        <span class="lab" id="openState">Today&rsquo;s hours</span>
+        <b>Mon&ndash;Thu 9&ndash;7 &middot; Fri 9&ndash;4 &middot; Sun 9&ndash;6 &middot; Sat closed</b>
       </div>
     </div>
   </div>
@@ -510,7 +511,7 @@ Phone <a href="tel:+15163045038">(516)&nbsp;304-5038</a> &middot; Fax (516)&nbsp
 <script>
 (function(){
   var el=document.getElementById('openState'); if(!el) return;
-  var H={0:[9,18],1:[9,20],2:[9,20],3:[9,20],4:[9,20],5:[9,17],6:null};
+  var H={0:[9,18],1:[9,19],2:[9,19],3:[9,19],4:[9,19],5:[9,16],6:null};
   var NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   function fmt(h){var m=h>=12?'pm':'am',x=h%12||12;return x+m;}
   function nyNow(){
