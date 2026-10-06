@@ -386,6 +386,14 @@
     .nav-cb:checked ~ .nav-side > a.nav-cta:last-child{margin-bottom:8px}
     .nav-cb:checked ~ .nav-side > a.nav-cta{display:block}
 
+    /* keep the header (and the open menu) intact while the page scrolls:
+       the desktop .scrolled shrink rules must not apply on mobile */
+    .navbar.scrolled .nav-in{height:auto}
+    .navbar.scrolled .nav-logo img{height:36px}
+    .navbar:has(.nav-cb:checked){background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}
+    .nav-in:has(.nav-cb:checked){max-height:100vh;max-height:100dvh;overflow-y:auto;overscroll-behavior:contain}
+    html:has(.nav-cb:checked){overflow:hidden}
+
     .foot-bar{flex-direction:column;padding:30px 0 26px;gap:20px;text-align:center}
     .foot-links{justify-content:center;gap:18px}
     .foot-contact{align-items:center}
