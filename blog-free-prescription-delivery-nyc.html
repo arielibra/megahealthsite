@@ -293,6 +293,37 @@
     .hide-xs{display:none}             /* drops "now" on the smallest phones only */
   }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://mymegahealth.com/blog-free-prescription-delivery-nyc.html#service",
+  "name": "Free prescription delivery in NYC",
+  "serviceType": "Prescription delivery",
+  "description": "How free pharmacy delivery works across all five boroughs of New York City: speed, cost, controlled medications and whether you need to be home.",
+  "url": "https://mymegahealth.com/blog-free-prescription-delivery-nyc.html",
+  "provider": {
+    "@id": "https://mymegahealth.com/#pharmacy"
+  },
+  "areaServed": [
+    {
+      "@type": "AdministrativeArea",
+      "name": "Queens"
+    },
+    {
+      "@type": "City",
+      "name": "New York"
+    }
+  ],
+  "availableChannel": {
+    "@type": "ServiceChannel",
+    "serviceLocation": {
+      "@id": "https://mymegahealth.com/#pharmacy"
+    },
+    "servicePhone": "+1-516-304-5038"
+  }
+}
+</script>
 </head>
 <body>
 <a href="#main" class="skip">Skip to content</a>
@@ -469,7 +500,8 @@ free delivery area. Nothing is committed at that point &mdash; it is one field.<
       "@type": "ImageObject",
       "url": "https://mymegahealth.com/logo-header.png"
     },
-    "url": "https://mymegahealth.com/"
+    "url": "https://mymegahealth.com/",
+    "@id": "https://mymegahealth.com/#pharmacy"
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
