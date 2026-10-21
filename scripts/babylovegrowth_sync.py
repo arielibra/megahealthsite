@@ -209,7 +209,20 @@ def related(cat, slug):
     return "\n".join(f'        <a href="{h}">{t}</a>' for h, t in picks)
 
 
+def pub_date(art, fallback):
+    """The article's own publish date (publishedAt), falling back to today."""
+    for k in ("publishedAt", "published_at", "created_at"):
+        v = str(art.get(k) or "")[:10]
+        try:
+            datetime.date.fromisoformat(v)
+            return v
+        except ValueError:
+            continue
+    return fallback
+
+
 def build_page(art, slug, today, created):
+    today = pub_date(art, today)
     title, desc, body, words, cat, label = render(art, slug, today)
     body, hero = localize_images(body, slug, art.get("hero_image_url"), created)
     if hero:
@@ -368,6 +381,9 @@ def main():
         if made >= MAX_NEW_PER_RUN:
             log("reached the per-run limit; the rest will come on the next run")
             break
+        lang = str(summary.get("languageCode") or "en").lower()
+        if not lang.startswith("en"):
+            continue  # the site is English-only
         slug = clean_slug(summary.get("slug"), summary.get("title"))
         branch = f"blg/{slug}"
         if os.path.exists(os.path.join(ROOT, slug + ".html")):
