@@ -143,6 +143,26 @@
   .card p{font-size:17.5px;color:var(--ink-soft);margin-bottom:14px}
   .card .more{color:var(--blue);font-weight:750;font-size:15.5px}
 
+  /* ---------- category bar ---------- */
+  .cats{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:0 0 14px}
+  .cats[hidden]{display:none}
+  .cat{font:inherit;font-size:15px;font-weight:650;color:var(--navy);background:#fff;
+    border:1.5px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;transition:border-color .15s ease,background .15s ease,color .15s ease}
+  .cat span{font-size:12px;font-weight:750;color:#41586F;background:var(--paper);border-radius:999px;
+    padding:1px 8px;min-width:24px;text-align:center}
+  .cat:hover{border-color:#B9CDE6;color:var(--blue)}
+  .cat[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+  .cat[aria-pressed="true"] span{background:rgba(255,255,255,.18);color:#fff}
+  .cat-status{text-align:center;font-size:14.5px;color:#41586F;font-weight:600;margin:0 0 30px;min-height:1em}
+  .card[hidden]{display:none}
+  @media(max-width:700px){
+    .cats{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;margin:0 -24px 12px;padding:2px 24px 8px;
+      scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .cats::-webkit-scrollbar{display:none}
+    .cat{flex:none;font-size:14.5px}
+  }
+
   /* ---------- post ---------- */
   .posthead{background:linear-gradient(180deg,var(--blue-soft) 0%,#fff 100%);padding:52px 0 40px}
   .posthead .wrap{max-width:800px}
@@ -349,7 +369,18 @@
 
   <section class="list">
     <div class="wrap">
-      <a class="card" href="meet-the-pharmacist.html">
+      <nav class="cats" aria-label="Blog categories" hidden>
+        <button type="button" class="cat" data-cat="all" aria-pressed="true">All <span>41</span></button>
+        <button type="button" class="cat" data-cat="vaccines" aria-pressed="false">Vaccines <span>7</span></button>
+        <button type="button" class="cat" data-cat="switching" aria-pressed="false">Switching pharmacies <span>5</span></button>
+        <button type="button" class="cat" data-cat="insurance" aria-pressed="false">Insurance &amp; cost <span>7</span></button>
+        <button type="button" class="cat" data-cat="medications" aria-pressed="false">Medications &amp; refills <span>6</span></button>
+        <button type="button" class="cat" data-cat="health" aria-pressed="false">Health tips <span>5</span></button>
+        <button type="button" class="cat" data-cat="our-pharmacy" aria-pressed="false">Our pharmacy &amp; delivery <span>7</span></button>
+        <button type="button" class="cat" data-cat="services" aria-pressed="false">Community services <span>4</span></button>
+      </nav>
+      <p class="cat-status" id="catStatus" aria-live="polite"></p>
+      <a class="card" data-cat="our-pharmacy" href="meet-the-pharmacist.html">
         <div class="meta">
           <span class="chip">Our pharmacist</span>
           <time datetime="2026-09-29">September 29, 2026</time>
@@ -359,27 +390,27 @@
         <p>Owner and supervising pharmacist Dr. Sam Borukhov, PharmD: 10+ years across retail, hospital and specialty pharmacy. Fluent in English and Russian.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="pharmacy-forest-hills-queens.html">
+      <a class="card" data-cat="our-pharmacy" href="pharmacy-forest-hills-queens.html">
         <div class="meta">
           <span class="chip">Forest Hills</span>
           <time datetime="2026-09-27">September 27, 2026</time>
           <span class="read">3 min read</span>
         </div>
-        <h2>Pharmacy in Forest Hills, Queens (11375): Mega Health Rx on 108th Street</h2>
+        <h2>Forest Hills Pharmacy: Mega Health Rx on 108th Street, Queens (11375)</h2>
         <p>Where we are, our hours, what we offer, and why Forest Hills neighbors are moving their prescriptions from the Queens Boulevard chains.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="pharmacy-rego-park-queens.html">
+      <a class="card" data-cat="our-pharmacy" href="pharmacy-rego-park-queens.html">
         <div class="meta">
           <span class="chip">Rego Park</span>
           <time datetime="2026-09-27">September 27, 2026</time>
           <span class="read">3 min read</span>
         </div>
-        <h2>Pharmacy Near Rego Park, Queens (11374): Free Delivery and Fast Transfers</h2>
+        <h2>Rego Park Pharmacy with Free Same-Day Delivery (11374)</h2>
         <p>Rego Park neighbors: free same-day delivery to your door, walk-in vaccines on 108th Street, and a transfer from any Rego Park pharmacy in about a minute.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="pharmacy-delivery-forest-hills-rego-park.html">
+      <a class="card" data-cat="our-pharmacy" href="pharmacy-delivery-forest-hills-rego-park.html">
         <div class="meta">
           <span class="chip">Free delivery</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -389,7 +420,7 @@
         <p>No minimum, no fee, no membership. How same-day prescription delivery works in 11375 and 11374, who can sign, and what we can bring.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="pharmacy-open-sunday-forest-hills.html">
+      <a class="card" data-cat="our-pharmacy" href="pharmacy-open-sunday-forest-hills.html">
         <div class="meta">
           <span class="chip">Hours</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -399,7 +430,7 @@
         <p>We are open Sundays 9 to 6. Here is how to plan weekend refills so you never run out, and what to do if you need something on a Saturday.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="pharmacy-near-corona-lefrak-city.html">
+      <a class="card" data-cat="our-pharmacy" href="pharmacy-near-corona-lefrak-city.html">
         <div class="meta">
           <span class="chip">Neighborhoods</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -409,17 +440,27 @@
         <p>108th Street connects Forest Hills to Corona. Here is how we serve Corona, Lefrak City and Elmhurst with free delivery and walk-in care.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="transfer-prescription-from-cvs-forest-hills.html">
+      <a class="card" data-cat="switching" href="transfer-prescription-from-cvs-forest-hills.html">
         <div class="meta">
           <span class="chip">Switching pharmacies</span>
           <time datetime="2026-09-27">September 27, 2026</time>
           <span class="read">4 min read</span>
         </div>
-        <h2>How to Transfer Your Prescription from CVS, Walgreens or Duane Reade in Forest Hills and Rego Park</h2>
+        <h2>How to Transfer a Prescription from CVS in Forest Hills and Rego Park</h2>
         <p>You don&rsquo;t have to call CVS, Walgreens, Duane Reade or your doctor. How the transfer works, whether your insurance still covers you, and how to avoid a gap.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="pharmacy-closed-what-happens-to-prescriptions.html">
+      <a class="card" data-cat="switching" href="transfer-prescription-from-walgreens-forest-hills.html">
+        <div class="meta">
+          <span class="chip">Switching pharmacies</span>
+          <time datetime="2026-10-21">October 21, 2026</time>
+          <span class="read">3 min read</span>
+        </div>
+        <h2>How to Transfer a Prescription from Walgreens (Forest Hills &amp; Queens)</h2>
+        <p>You don&rsquo;t need to call Walgreens or Duane Reade. How the transfer works, how long it takes, and what happens with your insurance.</p>
+        <span class="more">Read the article &rarr;</span>
+      </a>
+      <a class="card" data-cat="switching" href="pharmacy-closed-what-happens-to-prescriptions.html">
         <div class="meta">
           <span class="chip">Switching pharmacies</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -429,7 +470,7 @@
         <p>When a pharmacy closes, your prescription file usually goes to another store you didn&rsquo;t choose. How to find it and move it where you want.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="medication-out-of-stock-pharmacy-queens.html">
+      <a class="card" data-cat="medications" href="medication-out-of-stock-pharmacy-queens.html">
         <div class="meta">
           <span class="chip">Refills</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -439,7 +480,7 @@
         <p>Why pharmacies run out, what to do the same day, and how ordering ahead of your refill date keeps it from happening again.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="shingles-vaccine-forest-hills.html">
+      <a class="card" data-cat="vaccines" href="shingles-vaccine-forest-hills.html">
         <div class="meta">
           <span class="chip">Vaccinations</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -449,7 +490,7 @@
         <p>CDC recommends two doses of Shingrix for adults 50 and older. Who should get it, spacing between doses, side effects, and Medicare coverage.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="rsv-vaccine-forest-hills.html">
+      <a class="card" data-cat="vaccines" href="rsv-vaccine-forest-hills.html">
         <div class="meta">
           <span class="chip">Vaccinations</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -459,7 +500,7 @@
         <p>CDC recommends one RSV vaccine dose for everyone 75+ and adults 50&ndash;74 at higher risk. Who qualifies, timing, and what it costs.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="covid-vaccine-testing-forest-hills.html">
+      <a class="card" data-cat="vaccines" href="covid-vaccine-testing-forest-hills.html">
         <div class="meta">
           <span class="chip">Vaccinations</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -469,7 +510,7 @@
         <p>The 2026&ndash;2027 COVID-19 vaccine is recommended for all adults. Timing, getting it with your flu shot, and rapid testing with results while you wait.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="pneumonia-vaccine-queens.html">
+      <a class="card" data-cat="vaccines" href="pneumonia-vaccine-queens.html">
         <div class="meta">
           <span class="chip">Vaccinations</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -479,7 +520,7 @@
         <p>Adults 50 and older are now recommended to get a pneumococcal vaccine. How to tell if you are already covered, and walk-ins on 108th Street.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="tdap-vaccine-forest-hills.html">
+      <a class="card" data-cat="vaccines" href="tdap-vaccine-forest-hills.html">
         <div class="meta">
           <span class="chip">Vaccinations</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -489,7 +530,7 @@
         <p>Tetanus and whooping cough protection: who needs Tdap, how often, why it matters around newborns, and walk-in shots on 108th Street.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="free-blood-pressure-check-forest-hills.html">
+      <a class="card" data-cat="health" href="free-blood-pressure-check-forest-hills.html">
         <div class="meta">
           <span class="chip">Health checks</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -499,7 +540,7 @@
         <p>Walk in for a free blood pressure check any time we are open. What the numbers mean and how to get an accurate reading.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="diabetes-supplies-forest-hills.html">
+      <a class="card" data-cat="health" href="diabetes-supplies-forest-hills.html">
         <div class="meta">
           <span class="chip">Health checks</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -509,7 +550,7 @@
         <p>Test strips, meters, lancets, pen needles and blood sugar screening, plus free delivery so you never run short.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="medication-review-pharmacist-queens.html">
+      <a class="card" data-cat="medications" href="medication-review-pharmacist-queens.html">
         <div class="meta">
           <span class="chip">Pharmacist care</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -519,7 +560,7 @@
         <p>Bring your bag of pill bottles. We check interactions, duplicates, side effects, timing and cost, then share anything important with your doctor.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="otc-benefit-card-pharmacy-queens.html">
+      <a class="card" data-cat="insurance" href="otc-benefit-card-pharmacy-queens.html">
         <div class="meta">
           <span class="chip">Insurance</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -529,7 +570,7 @@
         <p>Many Medicare Advantage and Medicaid plans include an allowance for over-the-counter items. What it covers, and using it on 108th Street.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="medical-supplies-forest-hills.html">
+      <a class="card" data-cat="services" href="medical-supplies-forest-hills.html">
         <div class="meta">
           <span class="chip">Services</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -539,7 +580,7 @@
         <p>Braces, mobility aids, diabetic and wound care supplies, and help figuring out what insurance covers.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="notary-public-forest-hills.html">
+      <a class="card" data-cat="services" href="notary-public-forest-hills.html">
         <div class="meta">
           <span class="chip">Community services</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -549,7 +590,7 @@
         <p>Get documents notarized on the spot. What to bring, which documents a notary can handle, and when to see a lawyer instead.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="dmv-vision-test-forest-hills.html">
+      <a class="card" data-cat="services" href="dmv-vision-test-forest-hills.html">
         <div class="meta">
           <span class="chip">Community services</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -559,7 +600,7 @@
         <p>Renewing your license or getting a learner permit? Get the vision test on 108th Street and skip a DMV visit.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="money-orders-bill-pay-forest-hills.html">
+      <a class="card" data-cat="services" href="money-orders-bill-pay-forest-hills.html">
         <div class="meta">
           <span class="chip">Community services</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -569,7 +610,7 @@
         <p>Money orders issued while you wait at a fair fee, and bill pay at the counter for utilities and household bills.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="medicare-pharmacy-forest-hills.html">
+      <a class="card" data-cat="insurance" href="medicare-pharmacy-forest-hills.html">
         <div class="meta">
           <span class="chip">Medicare</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -579,7 +620,7 @@
         <p>We accept most Part D and Medicare Advantage drug plans. Preferred vs. standard networks, the out-of-pocket cap, and free delivery for seniors.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="medicaid-pharmacy-queens.html">
+      <a class="card" data-cat="insurance" href="medicaid-pharmacy-queens.html">
         <div class="meta">
           <span class="chip">Insurance</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -589,7 +630,7 @@
         <p>Most New York Medicaid members get pharmacy benefits through NYRx. What that means, what to bring, and how to transfer to us.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="caremark-express-scripts-optumrx-local-pharmacy.html">
+      <a class="card" data-cat="insurance" href="caremark-express-scripts-optumrx-local-pharmacy.html">
         <div class="meta">
           <span class="chip">Insurance</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -599,7 +640,7 @@
         <p>Caremark is not the same as a CVS store. How pharmacy benefit networks work, when mail order is required, and how to check your plan.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="save-money-on-prescriptions-queens.html">
+      <a class="card" data-cat="insurance" href="save-money-on-prescriptions-queens.html">
         <div class="meta">
           <span class="chip">Cost</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -609,7 +650,7 @@
         <p>Generics, 90-day supplies, formulary swaps, copay programs, the Part D cap and cash prices: what actually lowers the bill.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="glp1-pharmacy-forest-hills.html">
+      <a class="card" data-cat="medications" href="glp1-pharmacy-forest-hills.html">
         <div class="meta">
           <span class="chip">GLP-1 medications</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -619,7 +660,7 @@
         <p>How to check availability, get insurance approval, store your pens, and get them delivered cold, free, anywhere in NYC.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="prior-authorization-help-pharmacy.html">
+      <a class="card" data-cat="insurance" href="prior-authorization-help-pharmacy.html">
         <div class="meta">
           <span class="chip">Insurance</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -629,7 +670,7 @@
         <p>What a prior authorization is, why refills get rejected, how long approval takes, and how we work it through with your doctor.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="ran-out-of-medication-new-york.html">
+      <a class="card" data-cat="medications" href="ran-out-of-medication-new-york.html">
         <div class="meta">
           <span class="chip">Refills</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -639,7 +680,7 @@
         <p>Emergency supplies, fast renewals, what to do on a weekend, and how automatic refills stop it from happening again.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="managing-parents-medications-queens.html">
+      <a class="card" data-cat="medications" href="managing-parents-medications-queens.html">
         <div class="meta">
           <span class="chip">Caregivers</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -649,7 +690,7 @@
         <p>A practical guide for adult children: one medication list, one pharmacy, synced refills, pill organizers, delivery, and being able to talk to the pharmacist.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="allergy-season-queens-pharmacist.html">
+      <a class="card" data-cat="health" href="allergy-season-queens-pharmacist.html">
         <div class="meta">
           <span class="chip">Everyday health</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -659,7 +700,7 @@
         <p>Antihistamines, nasal sprays, eye drops and decongestants: what each does, who should avoid what, and when to see a doctor.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="cold-flu-covid-rsv-difference.html">
+      <a class="card" data-cat="health" href="cold-flu-covid-rsv-difference.html">
         <div class="meta">
           <span class="chip">Everyday health</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -669,7 +710,7 @@
         <p>The symptoms overlap, so testing is the only way to know. How they differ, who should test early, and warning signs that need care.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="forest-hills-rego-park-health-resources.html">
+      <a class="card" data-cat="health" href="forest-hills-rego-park-health-resources.html">
         <div class="meta">
           <span class="chip">Community</span>
           <time datetime="2026-09-27">September 27, 2026</time>
@@ -679,7 +720,7 @@
         <p>Emergency and crisis numbers, the nearest hospital, help for seniors and caregivers, insurance counseling and prescription help, in one place.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="blog-medicare-part-d-open-enrollment.html">
+      <a class="card" data-cat="insurance" href="blog-medicare-part-d-open-enrollment.html">
         <div class="meta">
           <span class="chip">Medicare</span>
           <time datetime="2026-09-24">September 24, 2026</time>
@@ -689,7 +730,7 @@
         <p>Open Enrollment runs October 15 to December 7. What changes for Part D in 2027, the four things to check before you renew, and how to compare plans properly.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="blog-flu-shots-forest-hills.html">
+      <a class="card" data-cat="vaccines" href="blog-flu-shots-forest-hills.html">
         <div class="meta">
           <span class="chip">Flu season</span>
           <time datetime="2026-09-24">September 24, 2026</time>
@@ -699,7 +740,7 @@
         <p>When to get vaccinated, what changed in this year&rsquo;s vaccine, the side effects that are normal, and answers to the questions we get asked at the counter.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="blog-independent-nyc-pharmacy.html">
+      <a class="card" data-cat="switching" href="blog-independent-nyc-pharmacy.html">
         <div class="meta">
           <span class="chip">Choosing a pharmacy</span>
           <time datetime="2026-09-11">September 11, 2026</time>
@@ -709,7 +750,7 @@
         <p>Shorter waits, real insurance advocacy, free same-day delivery, and a pharmacist who actually picks up the phone. Why New Yorkers are leaving the chains.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="blog-glp-1-injections-vs-pills.html">
+      <a class="card" data-cat="medications" href="blog-glp-1-injections-vs-pills.html">
         <div class="meta">
           <span class="chip">GLP-1 medications</span>
           <time datetime="2026-09-11">September 11, 2026</time>
@@ -719,7 +760,7 @@
         <p>How Ozempic, Wegovy, Mounjaro and Zepbound work, what the side effects are, and how the new oral option compares to the injection.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="blog-transfer-prescription-nyc.html">
+      <a class="card" data-cat="switching" href="blog-transfer-prescription-nyc.html">
         <div class="meta">
           <span class="chip">Switching pharmacies</span>
           <time datetime="2026-07-29">July 29, 2026</time>
@@ -729,7 +770,7 @@
         <p>You do not have to call your old pharmacy, and you do not have to ask your doctor for a new prescription. Here is exactly how a transfer works.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="blog-free-prescription-delivery-nyc.html">
+      <a class="card" data-cat="our-pharmacy" href="blog-free-prescription-delivery-nyc.html">
         <div class="meta">
           <span class="chip">Free delivery</span>
           <time datetime="2026-07-29">July 29, 2026</time>
@@ -739,7 +780,7 @@
         <p>What free pharmacy delivery in New York City involves, what it costs, how fast it is, and what happens with controlled medications.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="blog-walk-in-vaccinations-forest-hills.html">
+      <a class="card" data-cat="vaccines" href="blog-walk-in-vaccinations-forest-hills.html">
         <div class="meta">
           <span class="chip">Vaccinations</span>
           <time datetime="2026-07-29">July 29, 2026</time>
@@ -886,9 +927,15 @@
     },
     {
       "@type": "BlogPosting",
-      "headline": "How to Transfer Your Prescription from CVS, Walgreens or Duane Reade in Forest Hills and Rego Park",
+      "headline": "How to Transfer a Prescription from CVS in Forest Hills and Rego Park",
       "url": "https://mymegahealth.com/transfer-prescription-from-cvs-forest-hills.html",
       "datePublished": "2026-09-27"
+    },
+    {
+      "@type": "BlogPosting",
+      "headline": "How to Transfer a Prescription from Walgreens (Forest Hills & Queens)",
+      "url": "https://mymegahealth.com/transfer-prescription-from-walgreens-forest-hills.html",
+      "datePublished": "2026-10-21"
     },
     {
       "@type": "BlogPosting",
@@ -1105,6 +1152,38 @@
     if(y!==on){ on=y; nav.classList.toggle('scrolled',y); }
   }
   check(); window.addEventListener('scroll',check,{passive:true});
+})();
+</script>
+<script>
+(function(){
+  var bar=document.querySelector('.cats'); if(!bar) return;
+  var btns=[].slice.call(bar.querySelectorAll('.cat'));
+  var cards=[].slice.call(document.querySelectorAll('.list .card'));
+  var status=document.getElementById('catStatus');
+  var valid={}; btns.forEach(function(b){valid[b.getAttribute('data-cat')]=b;});
+  function show(cat, push){
+    if(!valid[cat]) cat='all';
+    var n=0;
+    cards.forEach(function(c){
+      var on=cat==='all'||c.getAttribute('data-cat')===cat;
+      c.hidden=!on; if(on) n++;
+    });
+    btns.forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-cat')===cat?'true':'false');});
+    var label=valid[cat].firstChild.textContent.trim();
+    status.textContent= cat==='all' ? 'Showing all '+n+' articles' : 'Showing '+n+' articles in '+label;
+    if(push){
+      var url=location.pathname+location.search+(cat==='all'?'':'#'+cat);
+      try{history.replaceState(null,'',url);}catch(e){}
+    }
+  }
+  bar.hidden=false;
+  bar.addEventListener('click',function(e){
+    var b=e.target.closest('.cat'); if(!b) return;
+    show(b.getAttribute('data-cat'), true);
+    b.scrollIntoView({block:'nearest',inline:'center'});
+  });
+  window.addEventListener('hashchange',function(){show(location.hash.slice(1), false);});
+  show(location.hash.slice(1), false);
 })();
 </script>
 </body>
