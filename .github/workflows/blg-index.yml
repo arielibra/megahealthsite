@@ -1,0 +1,38 @@
+name: Add merged articles to the blog
+
+# After an imported article's pull request is merged, list it on blog.html
+# and add it to sitemap.xml and llms.txt.
+
+on:
+  push:
+    branches: [main]
+    paths: ["*.html"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: blg-index
+  cancel-in-progress: false
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Update blog index, sitemap and llms.txt
+        run: |
+          python scripts/babylovegrowth_sync.py --index
+          if git diff --quiet; then echo "Nothing to add."; exit 0; fi
+          git config user.name "BabyLoveGrowth import"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add blog.html sitemap.xml llms.txt
+          git commit -m "Add newly published article(s) to the blog index"
+          git push
