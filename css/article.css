@@ -263,3 +263,5 @@
   article ol{margin:0 0 18px 22px}
   article ol li{margin-bottom:9px}
   article h2[id]{scroll-margin-top:100px}
+article p a,article li a{color:var(--blue);font-weight:600}
+article p a:hover,article li a:hover{color:var(--blue-dk)}

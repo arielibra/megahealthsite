@@ -256,3 +256,5 @@
   @media(max-width:374px){
     .hide-xs{display:none}             /* drops "now" on the smallest phones only */
   }
+article p a,article li a{color:var(--blue);font-weight:600}
+article p a:hover,article li a:hover{color:var(--blue-dk)}
