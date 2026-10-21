@@ -144,17 +144,28 @@
   .card .more{color:var(--blue);font-weight:750;font-size:15.5px}
 
   /* ---------- category bar ---------- */
-  .cats{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:0 0 14px}
+  .list.has-cats{padding-top:8px}
+  .cats-wrap{position:relative;margin:0 0 10px;border-bottom:1px solid var(--line);
+    width:min(1092px,calc(100vw - 48px));margin-left:calc(50% - min(546px,calc(50vw - 24px)))}
+  .cats{display:flex;justify-content:center;gap:4px;overflow-x:auto;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch}
+  .cats::-webkit-scrollbar{display:none}
   .cats[hidden]{display:none}
-  .cat{font:inherit;font-size:15px;font-weight:650;color:var(--navy);background:#fff;
-    border:1.5px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:8px;transition:border-color .15s ease,background .15s ease,color .15s ease}
-  .cat span{font-size:12px;font-weight:750;color:#41586F;background:var(--paper);border-radius:999px;
-    padding:1px 8px;min-width:24px;text-align:center}
-  .cat:hover{border-color:#B9CDE6;color:var(--blue)}
-  .cat[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
-  .cat[aria-pressed="true"] span{background:rgba(255,255,255,.18);color:#fff}
-  .cat-status{text-align:center;font-size:14.5px;color:#41586F;font-weight:600;margin:0 0 30px;min-height:1em}
+  .cats-wrap:not(.on){border:0;margin:0}
+  .cat{flex:none;font:inherit;font-size:15.5px;font-weight:600;color:var(--ink-soft);background:none;border:0;
+    padding:14px 14px 13px;cursor:pointer;position:relative;white-space:nowrap;transition:color .15s ease}
+  .cat::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;
+    background:var(--blue);transform:scaleX(0);transition:transform .2s cubic-bezier(.16,1,.3,1)}
+  .cat:hover{color:var(--navy)}
+  .cat[aria-pressed="true"]{color:var(--navy);font-weight:750}
+  .cat[aria-pressed="true"]::after{transform:scaleX(1)}
+  .cat-status{text-align:center;font-size:14px;color:#41586F;font-weight:600;margin:14px 0 26px;min-height:1em}
+  @media(max-width:1060px){
+    .cats{justify-content:flex-start}
+    .cats-wrap::after{content:"";position:absolute;top:0;right:0;bottom:1px;width:36px;pointer-events:none;
+      background:linear-gradient(90deg,rgba(255,255,255,0),#fff)}
+  }
+  @media(max-width:600px){.cat{font-size:14.5px;padding:13px 11px 12px}.cat::after{left:11px;right:11px}}
   .card[hidden]{display:none}
   @media(max-width:700px){
     .cats{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;margin:0 -24px 12px;padding:2px 24px 8px;
@@ -367,18 +378,18 @@
     </div>
   </div>
 
-  <section class="list">
+  <section class="list has-cats">
     <div class="wrap">
-      <nav class="cats" aria-label="Blog categories" hidden>
-        <button type="button" class="cat" data-cat="all" aria-pressed="true">All <span>41</span></button>
-        <button type="button" class="cat" data-cat="vaccines" aria-pressed="false">Vaccines <span>7</span></button>
-        <button type="button" class="cat" data-cat="switching" aria-pressed="false">Switching pharmacies <span>5</span></button>
-        <button type="button" class="cat" data-cat="insurance" aria-pressed="false">Insurance &amp; cost <span>7</span></button>
-        <button type="button" class="cat" data-cat="medications" aria-pressed="false">Medications &amp; refills <span>6</span></button>
-        <button type="button" class="cat" data-cat="health" aria-pressed="false">Health tips <span>5</span></button>
-        <button type="button" class="cat" data-cat="our-pharmacy" aria-pressed="false">Our pharmacy &amp; delivery <span>7</span></button>
-        <button type="button" class="cat" data-cat="services" aria-pressed="false">Community services <span>4</span></button>
-      </nav>
+      <div class="cats-wrap"><nav class="cats" aria-label="Blog categories" hidden>
+        <button type="button" class="cat" data-cat="all" aria-pressed="true">All</button>
+        <button type="button" class="cat" data-cat="vaccines" aria-pressed="false">Vaccines</button>
+        <button type="button" class="cat" data-cat="switching" aria-pressed="false">Switching pharmacies</button>
+        <button type="button" class="cat" data-cat="insurance" aria-pressed="false">Insurance &amp; cost</button>
+        <button type="button" class="cat" data-cat="medications" aria-pressed="false">Medications</button>
+        <button type="button" class="cat" data-cat="health" aria-pressed="false">Health tips</button>
+        <button type="button" class="cat" data-cat="our-pharmacy" aria-pressed="false">Our pharmacy</button>
+        <button type="button" class="cat" data-cat="services" aria-pressed="false">Services</button>
+      </nav></div>
       <p class="cat-status" id="catStatus" aria-live="polite"></p>
       <a class="card" data-cat="our-pharmacy" href="meet-the-pharmacist.html">
         <div class="meta">
@@ -1169,18 +1180,22 @@
       c.hidden=!on; if(on) n++;
     });
     btns.forEach(function(b){b.setAttribute('aria-pressed', b.getAttribute('data-cat')===cat?'true':'false');});
-    var label=valid[cat].firstChild.textContent.trim();
-    status.textContent= cat==='all' ? 'Showing all '+n+' articles' : 'Showing '+n+' articles in '+label;
+    var act=valid[cat];
+    if(bar.scrollWidth>bar.clientWidth){
+      var x=act.offsetLeft-(bar.clientWidth-act.offsetWidth)/2;
+      try{bar.scrollTo({left:x,behavior:push?'smooth':'auto'});}catch(e){bar.scrollLeft=x;}
+    }
+    var label=valid[cat].textContent.trim();
+    status.textContent= cat==='all' ? 'All '+n+' articles' : n+' '+(n===1?'article':'articles')+' in '+label;
     if(push){
       var url=location.pathname+location.search+(cat==='all'?'':'#'+cat);
       try{history.replaceState(null,'',url);}catch(e){}
     }
   }
-  bar.hidden=false;
+  bar.hidden=false; bar.parentNode.classList.add('on');
   bar.addEventListener('click',function(e){
     var b=e.target.closest('.cat'); if(!b) return;
     show(b.getAttribute('data-cat'), true);
-    b.scrollIntoView({block:'nearest',inline:'center'});
   });
   window.addEventListener('hashchange',function(){show(location.hash.slice(1), false);});
   show(location.hash.slice(1), false);
