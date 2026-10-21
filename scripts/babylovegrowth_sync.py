@@ -30,11 +30,11 @@ UA = "mymegahealth-sync/1.0"
 # Blog categories (data-cat on blog.html) and the label shown on the article.
 CATEGORY_RULES = [
     ("vaccines", "Vaccinations", r"vaccin|flu shot|shingles|shingrix|rsv|pneumon|tdap|covid shot|immuniz"),
-    ("insurance", "Insurance", r"medicare|medicaid|insurance|part d|copay|otc card|otc benefit|formulary|prior auth|deductible|caremark|express scripts|optumrx"),
     ("switching", "Switching pharmacies", r"transfer|switch(ing)? pharmac|independent pharmac|chain pharmac"),
+    ("insurance", "Insurance", r"medicare|medicaid|insurance|part d|copay|otc card|otc benefit|formulary|prior auth|deductible|caremark|express scripts|optumrx"),
     ("medications", "Medications", r"refill|medication|prescription|glp-?1|ozempic|wegovy|mounjaro|zepbound|insulin|drug"),
     ("our-pharmacy", "Free delivery", r"deliver"),
-    ("services", "Services", r"notary|money order|dmv|medical suppl"),
+    ("services", "Services", r"notary|money order|dmv|driver.?s? licen|vision test|eye exam|medical suppl|bill pay"),
 ]
 DEFAULT_CAT = ("health", "Health tips")
 
@@ -166,6 +166,10 @@ def localize_images(body, slug, hero_url, created):
 
 
 def pick_category(art):
+    title = str(art.get("title") or "").lower()
+    for cat, label, pat in CATEGORY_RULES:
+        if re.search(pat, title):
+            return cat, label
     text = " ".join(str(art.get(k) or "") for k in ("title", "seedKeyword", "meta_description")).lower()
     kws = art.get("keywords")
     if isinstance(kws, list):
@@ -204,6 +208,10 @@ def tidy(body):
             a["target"], a["rel"] = "_blank", "noopener"
         elif re.match(r"https?://(www\.)?mymegahealth\.com/?$", a["href"]):
             a["href"] = "index.html"
+    # signature fragments BabyLoveGrowth leaves behind, e.g. "— Mega"
+    for para in soup.find_all("p"):
+        if re.fullmatch(r"[\u2014\u2013-]\s*[\w .&']{1,30}", para.get_text(" ", strip=True)):
+            para.decompose()
     # lead paragraph: the first paragraph with real text, not an image-only one
     for para in soup.find_all("p"):
         if para.get_text(strip=True):
@@ -344,6 +352,29 @@ def update_indexes(slug, title, desc, cat, label, mins, url, today):
     open(p, "w", encoding="utf-8").write(l)
 
 
+RISKY = [
+    (r"same[- ]day[^.]{0,60}(anywhere|all (five|5) boroughs|every borough|across (nyc|new york))|"
+     r"(anywhere in nyc|all (five|5) boroughs)[^.]{0,40}same[- ]day",
+     "same-day delivery outside Queens (it's same day or next day there)"),
+    (r"\ball (insurance|plans)|every (insurance|plan)|any insurance", "accepting all insurance (the site says most)"),
+    (r"assigned (a )?(dedicated )?pharmacist|dedicated pharmacist", "an assigned/dedicated pharmacist"),
+    (r"\b(guarantee|guaranteed|best pharmacy|cheapest|lowest price)", "guarantees or superlatives"),
+    (r"\$\s?\d", "prices or dollar amounts"),
+    (r"\b(24/7|open 24|open every day|open saturday)", "hours (closed Saturdays; not 24/7)"),
+]
+
+
+def risky_sentences(page):
+    text = plain(page.split("<article>", 1)[-1].split('<div class="cta-box">', 1)[0])
+    out = []
+    for sent in re.split(r"(?<=[.!?])\s+", text):
+        for pat, why in RISKY:
+            if re.search(pat, sent, re.I):
+                out.append(f"- [ ] *{why}*: \u201c{sent.strip()[:220]}\u201d")
+                break
+    return "\n".join(out[:12])
+
+
 PR_BODY = """New article from BabyLoveGrowth: **{title}**
 
 Preview the page: open **Files changed**, then `{slug}.html` → "View file".
@@ -353,7 +384,7 @@ Preview the page: open **Files changed**, then `{slug}.html` → "View file".
 - [ ] Nothing promises what we don't offer (delivery times, prices, coverage, services)
 - [ ] No claims we can't back up ("best", "guaranteed", "cheapest")
 - [ ] The category on the blog page fits (currently **{label}**)
-
+{flags}
 Merge to publish it on mymegahealth.com. Close without merging to reject it; it won't be imported again.
 
 ---
@@ -463,8 +494,10 @@ def main():
         run(["git", "add", "-A"])
         run(["git", "commit", "-m", f"New article: {title}\n\nImported from BabyLoveGrowth (id {art.get('id')})."])
         run(["git", "push", "-f", "origin", branch])
+        flags = risky_sentences(open(os.path.join(ROOT, slug + ".html"), encoding="utf-8").read())
+        flags = ("\n**Sentences to double-check (they make claims about our services):**\n" + flags + "\n") if flags else ""
         body = PR_BODY.format(title=title, slug=slug, label=label, seed=art.get("seedKeyword") or "-",
-                              aid=art.get("id"))
+                              aid=art.get("id"), flags=flags)
         run(["gh", "pr", "create", "--base", "main", "--head", branch, "--title", f"New article: {title}",
              "--body", body])
         run(["git", "checkout", "main"])
