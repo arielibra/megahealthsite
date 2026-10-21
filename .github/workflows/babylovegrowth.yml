@@ -31,7 +31,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install nh3==0.2.18 markdown==3.7
+        run: pip install nh3==0.2.18 markdown==3.7 beautifulsoup4==4.12.3
 
       - name: Import new articles as pull requests
         env:

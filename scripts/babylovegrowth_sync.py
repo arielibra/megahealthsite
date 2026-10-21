@@ -38,10 +38,11 @@ CATEGORY_RULES = [
 ]
 DEFAULT_CAT = ("health", "Health tips")
 
-ALLOWED_TAGS = {"p", "h2", "h3", "h4", "ul", "ol", "li", "strong", "b", "em", "i", "a", "blockquote",
+ALLOWED_TAGS = {"p", "h1", "h2", "h3", "h4", "div", "span", "section", "aside", "header", "ul", "ol", "li", "strong", "b", "em", "i", "a", "blockquote",
                 "table", "thead", "tbody", "tr", "th", "td", "img", "figure", "figcaption", "br", "hr",
                 "code", "pre", "sup", "sub"}
 ALLOWED_ATTRS = {"a": {"href", "title"}, "img": {"src", "alt", "width", "height"},
+                 "h2": {"id"}, "h3": {"id"}, "h4": {"id"},
                  "th": {"scope", "colspan", "rowspan"}, "td": {"colspan", "rowspan"}}
 
 
@@ -154,6 +155,7 @@ def localize_images(body, slug, hero_url, created):
         return tag
 
     body = re.sub(r"<img\b[^>]*>", repl, body)
+    body = re.sub(r"<p[^>]*>\s*</p>", "", body).strip()
     hero = None
     if hero_url:
         try:
@@ -174,6 +176,42 @@ def pick_category(art):
     return DEFAULT_CAT
 
 
+def tidy(body):
+    """Fit sanitized article HTML to the site's layout."""
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(body, "html.parser")
+    # the page template already shows the title as its H1
+    h1s = soup.find_all("h1")
+    if h1s:
+        h1s[0].decompose()
+        for h in h1s[1:]:
+            h.name = "h2"
+    # drop BabyLoveGrowth's inserted brand/promo boxes (the template has its own call to action)
+    for box in soup.find_all(["div", "section", "aside", "header"]):
+        if box.decomposed:
+            continue
+        text = box.get_text(" ", strip=True)
+        if ("mymegahealth.com" in text.lower() or "mymegahealth" == text.lower()[:12]) \
+                and len(text.split()) <= 80 and not box.find(["h2", "table", "ul", "ol"]):
+            box.decompose()
+    for tag in soup.find_all(["div", "span", "section", "aside", "header"]):
+        tag.unwrap()
+    for t in soup.find_all("table"):
+        wrap = soup.new_tag("div", attrs={"class": "tbl"})
+        t.wrap(wrap)
+    for a in soup.find_all("a", href=True):
+        if re.match(r"https?://", a["href"]) and not re.match(r"https?://(www\.)?mymegahealth\.com", a["href"]):
+            a["target"], a["rel"] = "_blank", "noopener"
+        elif re.match(r"https?://(www\.)?mymegahealth\.com/?$", a["href"]):
+            a["href"] = "index.html"
+    # lead paragraph: the first paragraph with real text, not an image-only one
+    for para in soup.find_all("p"):
+        if para.get_text(strip=True):
+            para["class"] = "stand"
+            break
+    return str(soup).strip()
+
+
 def plain(h):
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", h or ""))).strip()
 
@@ -185,14 +223,7 @@ def render(art, slug, today):
     if not raw and art.get("content_markdown"):
         import markdown
         raw = markdown.markdown(art["content_markdown"], extensions=["tables"])
-    body = sanitize(raw)
-    # the page already shows the title as its H1
-    body = re.sub(r"^\s*<h1\b[^>]*>.*?</h1>\s*", "", body, count=1, flags=re.S | re.I)
-    body = re.sub(r"<(/?)h1\b", r"<\1h2", body, flags=re.I)
-    body = re.sub(r"<table\b", '<div class="tbl"><table', body, flags=re.I)
-    body = re.sub(r"</table>", "</table></div>", body, flags=re.I)
-    body = re.sub(r'<a href="(https?://(?!mymegahealth\.com)[^"]+)"', r'<a href="\1" target="_blank" rel="noopener"', body)
-    body = re.sub(r"<p>", '<p class="stand">', body, count=1)
+    body = tidy(sanitize(raw))
     words = len(plain(body).split())
     if words < 150:
         raise ValueError(f"only {words} words of content; skipping")
@@ -225,7 +256,7 @@ def build_page(art, slug, today, created):
     today = pub_date(art, today)
     title, desc, body, words, cat, label = render(art, slug, today)
     body, hero = localize_images(body, slug, art.get("hero_image_url"), created)
-    if hero:
+    if hero and not re.match(r"\s*(<p[^>]*>\s*)?(<img|<figure)", body):
         body = (f'<img src="{hero}" alt="{html.escape(title, quote=True)}" decoding="async" '
                 f'style="border-radius:16px;margin:0 0 28px;width:100%">\n') + body
     url = SITE + slug + ".html"
@@ -367,7 +398,8 @@ def main():
         return
 
     if args.fixture:
-        arts = [json.load(open(args.fixture, encoding="utf-8"))]
+        data = json.load(open(args.fixture, encoding="utf-8"))
+        arts = data if isinstance(data, list) else [data]
         key = None
     else:
         key = os.environ.get("BABYLOVEGROWTH_API_KEY")
@@ -376,6 +408,17 @@ def main():
         arts = list_articles(key)
         log(f"{len(arts)} articles in BabyLoveGrowth")
 
+    norm = lambda t: re.sub(r"[^a-z0-9]+", " ", plain(t).lower().replace("\u2019", "'")).strip()
+    blog = open(os.path.join(ROOT, "blog.html"), encoding="utf-8").read()
+    seen_titles = {norm(t) for t in re.findall(r'<a class="card"[^>]*>.*?<h2>(.*?)</h2>', blog, re.S)}
+    if not args.no_git:
+        r = run(["gh", "pr", "list", "--state", "all", "--limit", "200", "--search", "New article in:title",
+                 "--json", "title"], check=False, capture=True)
+        try:
+            seen_titles |= {norm(p["title"].split(":", 1)[1]) for p in json.loads(r.stdout or "[]")
+                            if p["title"].startswith("New article:")}
+        except (json.JSONDecodeError, IndexError, KeyError):
+            pass
     made = 0
     for summary in arts:
         if made >= MAX_NEW_PER_RUN:
@@ -386,11 +429,16 @@ def main():
             continue  # the site is English-only
         slug = clean_slug(summary.get("slug"), summary.get("title"))
         branch = f"blg/{slug}"
+        t = norm(summary.get("title") or "")
+        if t and t in seen_titles:
+            log(f"skipping duplicate title: {summary.get('title')} ({slug})")
+            continue
         if os.path.exists(os.path.join(ROOT, slug + ".html")):
             continue
         if not args.no_git and pr_exists(branch):
             continue
         log(f"new article: {slug}")
+        seen_titles.add(t)
         art = summary if args.fixture else get_article(summary["id"], key)
         if not args.no_git:
             run(["git", "checkout", "-B", branch, "origin/main"])
